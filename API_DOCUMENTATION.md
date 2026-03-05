@@ -674,13 +674,14 @@ Hello World
 **功能说明：**
 - 通过 Server-Sent Events 实时推送频道状态更新
 - 长连接，持续推送
+- 如果频道不存在，会自动创建新频道记录
 
 **请求参数：**
 
 | 参数 | 类型 | 位置 | 必填 | 说明 |
 |------|------|------|------|------|
-| channelId | string | body | ✅ | 频道 ID |
-| platform | string | body | ✅ | 平台类型 |
+| channelId | string | query | ✅ | 频道 ID |
+| platform | string | query | ✅ | 平台类型：`youtube`、`twitch`、`bilibili` |
 
 **响应类型：** `text/event-stream`
 
@@ -712,6 +713,23 @@ Hello World
 | scheduledStreamTime | string | 预定开始时间（ISO 8601） |
 | streamUrl | string | 直播流地址 |
 | streamTitle | string | 直播标题 |
+
+**前端使用示例：**
+
+```typescript
+// 使用原生 EventSource API
+const eventSource = new EventSource(
+  `/api/channel/monitor/sse?channelId=${channel.channelId}&platform=${channel.platform}`
+);
+
+eventSource.onmessage = (event) => {
+  const status = JSON.parse(event.data);
+  console.log('Channel status:', status);
+};
+
+// 关闭连接
+eventSource.close();
+```
 
 ---
 
